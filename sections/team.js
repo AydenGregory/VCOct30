@@ -12,8 +12,7 @@ section("team", () => `
     #team .team-card:hover { transform: translateY(-4px); border-color: ${SITE.color}; }
     #team .team-avatar { width: 72px; height: 72px; margin: 0 auto 14px; border-radius: 50%; display: grid; place-items: center; font-size: 1.5rem; font-weight: 700; color: #0b1220; background: ${SITE.color}; }
     #team .team-name { margin: 0; font-size: 1.15rem; }
-    #team .team-role { margin: 2px 0 10px; color: ${SITE.color}; font-size: .9rem; font-weight: 600; }
-    #team .team-bio { margin: 0; color: #98a6bc; font-size: .92rem; }
+    #team .team-role { margin: 2px 0 0; color: ${SITE.color}; font-size: .9rem; font-weight: 600; }
   </style>
 
   <p class="team-eyebrow">The team</p>
@@ -22,16 +21,14 @@ section("team", () => `
 
   <div class="team-grid">
     <div class="team-card">
-      <div class="team-avatar">YN</div>
-      <h3 class="team-name">Your Name</h3>
-      <p class="team-role">Co-founder · Design</p>
-      <p class="team-bio">Turns big goals into small, friendly steps you'll actually finish.</p>
+      <div class="team-avatar">SM</div>
+      <h3 class="team-name">Sabrina Montgomery</h3>
+      <p class="team-role">Co-founder</p>
     </div>
     <div class="team-card">
-      <div class="team-avatar">TN</div>
-      <h3 class="team-name">Teammate Name</h3>
-      <p class="team-role">Co-founder · Engineering</p>
-      <p class="team-bio">Builds the progress tracking that keeps every goal moving forward.</p>
+      <div class="team-avatar">AG</div>
+      <h3 class="team-name">Ayden Gregory</h3>
+      <p class="team-role">Co-founder</p>
     </div>
   </div>
 `);
