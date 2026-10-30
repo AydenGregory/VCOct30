@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your goals</title>
+<script>window.SITE = window.SITE || {};</script>
+<script src="site.js"></script>
+<style>
+  :root {
+    --brand: #5fe3cf;
+    --bg: #0b1220;
+    --card: #12203a;
+    --line: #22314d;
+    --text: #eef3fa;
+    --soft: #b4c0d3;
+    --muted: #98a6bc;
+    --danger: #ef7f8f;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+  footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 24px 16px; }
+
+  .back { display: inline-block; color: var(--muted); text-decoration: none; font-weight: 600; font-size: .95rem; }
+  .back:hover { color: var(--text); }
+  .eyebrow { margin: 28px 0 0; color: var(--brand); font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  h1 { margin: 4px 0 6px; font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.1; letter-spacing: -.02em; }
+  .lead { margin: 0 0 6px; color: var(--soft); }
+  .summary { margin: 0 0 24px; color: var(--muted); font-size: .9rem; min-height: 1.4em; }
+  .warn { margin: 0 0 16px; padding: 10px 14px; border: 1px solid var(--danger); border-radius: 10px; color: var(--danger); font-size: .9rem; }
+
+  input[type="text"], input[type="date"] {
+    font: inherit; color: var(--text); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0;
+  }
+  input::placeholder { color: #66758e; }
+  input:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  input[type="checkbox"] { width: 20px; height: 20px; margin: 0; flex: none; accent-color: var(--brand); cursor: pointer; }
+
+  .btn { font: inherit; font-weight: 700; border: 0; border-radius: 10px; padding: 10px 18px; cursor: pointer; color: #0b1220; background: var(--brand); white-space: nowrap; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.ghost { color: var(--text); background: transparent; border: 1px solid var(--line); }
+  .btn.ghost:hover { border-color: var(--brand); }
+  .btn.small { padding: 8px 14px; font-size: .9rem; }
+  .text-btn { font: inherit; font-size: .85rem; font-weight: 600; color: var(--muted); background: none; border: 0; padding: 4px 6px; border-radius: 6px; cursor: pointer; }
+  .text-btn:hover { color: var(--text); }
+  .text-btn.danger:hover { color: var(--danger); }
+
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .new-goal h2 { margin: 0 0 12px; font-size: 1.05rem; }
+  .fields { display: grid; grid-template-columns: 1fr 170px; gap: 10px; }
+  .fields .wide { grid-column: 1 / -1; }
+  .form-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+
+  .empty { text-align: center; padding: 36px 20px; margin-top: 16px; border: 2px dashed #3a4a66; border-radius: 16px; color: var(--muted); }
+  .empty b { display: block; color: var(--text); font-size: 1.1rem; }
+  .empty p { margin: 4px 0 14px; }
+
+  .goals { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
+  .goal { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .goal.complete { border-color: color-mix(in srgb, var(--brand) 55%, var(--line)); }
+  .goal-head { display: flex; gap: 12px; align-items: flex-start; }
+  .goal-info { flex: 1; min-width: 0; }
+  .goal-title { margin: 0; font-size: 1.3rem; line-height: 1.25; overflow-wrap: anywhere; }
+  .goal-meta { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: .9rem; }
+  .goal-actions { display: flex; flex: none; }
+  .goal-edit { display: flex; flex-direction: column; gap: 10px; }
+
+  .progress { margin: 14px 0 12px; }
+  .progress-row { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); margin-bottom: 4px; }
+  .progress-row b { color: var(--brand); }
+  .bar { height: 8px; border-radius: 999px; background: #1f2d4a; overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: inherit; background: var(--brand); transition: width .3s ease; }
+
+  .steps { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .step { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 12px; border-radius: 10px; background: var(--bg); border: 1px solid #1f2d4a; }
+  .step.next { border-color: var(--brand); }
+  .step-text { flex: 1; min-width: 0; cursor: pointer; overflow-wrap: anywhere; }
+  .step.done .step-text { color: var(--muted); text-decoration: line-through; }
+  .step-due { font-size: .8rem; color: var(--muted); white-space: nowrap; }
+  .tag { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--brand); white-space: nowrap; }
+  .step-actions { display: flex; flex: none; }
+  .icon-btn { font: inherit; width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 6px; background: none; color: var(--muted); cursor: pointer; }
+  .icon-btn:hover:not(:disabled) { color: var(--text); background: #1f2d4a; }
+  .icon-btn.danger:hover { color: var(--danger); }
+  .icon-btn:disabled { opacity: .3; cursor: default; }
+  .step-edit { display: flex; gap: 8px; flex-wrap: wrap; width: 100%; }
+  .step-edit input[type="text"] { flex: 1 1 200px; }
+
+  .hint { margin: 0 0 12px; color: var(--muted); font-size: .9rem; }
+  .add-step { display: flex; gap: 8px; flex-wrap: wrap; }
+  .add-step input[type="text"] { flex: 1 1 220px; }
+  .add-step input[type="date"] { flex: 0 1 160px; }
+
+  .celebrate { margin: 0 0 12px; padding: 10px 14px; border-radius: 10px; font-weight: 700; color: #0b1220; background: var(--brand); }
+  .celebrate.pop { animation: pop .5s ease; }
+  @keyframes pop { 0% { transform: scale(.92); opacity: 0; } 60% { transform: scale(1.03); opacity: 1; } 100% { transform: none; } }
+
+  @media (max-width: 560px) {
+    .fields { grid-template-columns: 1fr; }
+    .goal-head { flex-direction: column; gap: 4px; }
+    .goal-actions { margin-left: -6px; }
+    .step { flex-wrap: wrap; }
+    .step-actions { margin-left: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .celebrate.pop { animation: none; }
+    .bar i { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" id="back" href="index.html">← Back</a>
+
+  <p class="eyebrow">Your goals</p>
+  <h1>Big goals, small steps</h1>
+  <p class="lead">Write down a big goal, then break it into small steps you can actually finish.</p>
+  <p class="summary" id="summary"></p>
+  <p class="warn" id="save-warn" hidden>This browser isn't letting us save, so your goals will disappear when you leave the page.</p>
+
+  <form class="panel new-goal" id="new-goal">
+    <h2>Add a big goal</h2>
+    <div class="fields">
+      <input type="text" id="goal-title" placeholder="e.g. Run a marathon" maxlength="120" required aria-label="Big goal">
+      <input type="date" id="goal-due" aria-label="Target date (optional)" title="Target date (optional)">
+      <input type="text" id="goal-why" class="wide" placeholder="Why it matters to you (optional)" maxlength="200" aria-label="Why it matters (optional)">
+    </div>
+    <div class="form-actions">
+      <button class="btn" type="submit">Add goal</button>
+    </div>
+  </form>
+
+  <div class="empty" id="empty" hidden>
+    <b>No goals yet</b>
+    <p>Add your first big goal above, or start from an example.</p>
+    <button class="btn ghost" type="button" id="example">Try an example</button>
+  </div>
+
+  <div class="goals" id="goals"></div>
+</main>
+<footer>Saved in this browser only · Built at CPVC · Cal Poly Vibe Coding</footer>
+
+<script>
+(function () {
+  var KEY = "goalmanager.goals.v1";
+  var list = document.getElementById("goals");
+  var empty = document.getElementById("empty");
+  var summary = document.getElementById("summary");
+  var saveWarn = document.getElementById("save-warn");
+
+  var goals = load();
+  var editing = null;     // { goalId } or { goalId, stepId }
+  var focusAfter = null;  // CSS selector to focus after the next render
+  var justFinished = null;
+
+  // Branding from site.js
+  var name = SITE.name || "Our App";
+  document.title = "Your goals · " + name;
+  document.getElementById("back").textContent = "← Back to " + name;
+  if (SITE.color) document.documentElement.style.setProperty("--brand", SITE.color);
+
+  function load() {
+    try {
+      var data = JSON.parse(localStorage.getItem(KEY) || "[]");
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(goals));
+      saveWarn.hidden = true;
+    } catch (e) {
+      saveWarn.hidden = false;
+    }
+  }
+
+  function uid() {
+    return "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function fmt(d) {
+    var t = new Date(d + "T00:00:00");
+    return isNaN(t) ? d : t.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  // Small helper for building elements. Text always goes in with textContent, never as HTML.
+  function el(tag, props, kids) {
+    var n = document.createElement(tag);
+    for (var k in props || {}) {
+      var v = props[k];
+      if (v == null || v === false) continue;
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), v);
+      else if (typeof v === "boolean") n[k] = v;
+      else n.setAttribute(k, v);
+    }
+    (kids || []).forEach(function (c) {
+      if (c == null || c === false) return;
+      n.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+
+  function findGoal(id) {
+    return goals.filter(function (g) { return g.id === id; })[0];
+  }
+
+  function stopEditing() {
+    editing = null;
+    render();
+  }
+
+  // ---------- Rendering ----------
+
+  function render() {
+    list.textContent = "";
+    empty.hidden = goals.length > 0;
+    goals.forEach(function (g) { list.appendChild(goalCard(g)); });
+
+    var steps = 0, done = 0;
+    goals.forEach(function (g) {
+      steps += g.steps.length;
+      g.steps.forEach(function (s) { if (s.done) done++; });
+    });
+    summary.textContent = goals.length
+      ? goals.length + (goals.length === 1 ? " goal" : " goals") + " · " + done + " of " + steps + " steps done"
+      : "";
+
+    if (focusAfter) {
+      var f = document.querySelector(focusAfter);
+      if (f) f.focus();
+      focusAfter = null;
+    }
+    justFinished = null;
+  }
+
+  function goalCard(g) {
+    var total = g.steps.length;
+    var done = g.steps.filter(function (s) { return s.done; }).length;
+    var pct = total ? Math.round(done / total * 100) : 0;
+    var complete = total > 0 && done === total;
+    var nextIndex = g.steps.findIndex(function (s) { return !s.done; });
+    var isEditing = editing && editing.goalId === g.id && !editing.stepId;
+
+    return el("article", { class: "goal" + (complete ? " complete" : ""), "data-goal": g.id }, [
+      isEditing ? goalEditForm(g) : goalHead(g),
+      el("div", { class: "progress" }, [
+        el("div", { class: "progress-row" }, [
+          el("span", { text: total ? done + " of " + total + " steps done" : "No steps yet" }),
+          el("b", { text: pct + "%" })
+        ]),
+        el("div", { class: "bar", role: "progressbar", "aria-label": "Progress on " + g.title,
+                    "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(pct) }, [
+          el("i", { style: "width: " + pct + "%" })
+        ])
+      ]),
+      complete && el("p", { class: "celebrate" + (justFinished === g.id ? " pop" : ""), text: "🎉 Goal complete! You finished every step." }),
+      total
+        ? el("ol", { class: "steps" }, g.steps.map(function (s, i) { return stepItem(g, s, i, i === nextIndex); }))
+        : el("p", { class: "hint", text: "What's one small thing you could do this week to get closer?" }),
+      addStepForm(g)
+    ]);
+  }
+
+  function goalHead(g) {
+    return el("div", { class: "goal-head" }, [
+      el("div", { class: "goal-info" }, [
+        el("h2", { class: "goal-title", text: g.title }),
+        (g.due || g.why) && el("p", { class: "goal-meta" }, [
+          g.due && el("span", { text: "By " + fmt(g.due) }),
+          g.why && el("span", { text: "Why: " + g.why })
+        ])
+      ]),
+      el("div", { class: "goal-actions" }, [
+        el("button", { type: "button", class: "text-btn", text: "Edit", "aria-label": "Edit goal: " + g.title,
+          onclick: function () {
+            editing = { goalId: g.id };
+            focusAfter = '[data-edit-goal="' + g.id + '"]';
+            render();
+          } }),
+        el("button", { type: "button", class: "text-btn danger", text: "Delete", "aria-label": "Delete goal: " + g.title,
+          onclick: function () {
+            if (!confirm('Delete "' + g.title + '" and all of its steps?')) return;
+            goals = goals.filter(function (x) { return x !== g; });
+            save();
+            render();
+          } })
+      ])
+    ]);
+  }
+
+  function goalEditForm(g) {
+    var title = el("input", { type: "text", value: g.title, maxlength: "120", required: true, "aria-label": "Big goal", "data-edit-goal": g.id });
+    var due = el("input", { type: "date", value: g.due || "", "aria-label": "Target date (optional)" });
+    var why = el("input", { type: "text", value: g.why || "", maxlength: "200", placeholder: "Why it matters to you (optional)", "aria-label": "Why it matters (optional)" });
+    return el("form", {
+      class: "goal-edit",
+      onsubmit: function (e) {
+        e.preventDefault();
+        var v = title.value.trim();
+        if (!v) return;
+        g.title = v;
+        g.due = due.value;
+        g.why = why.value.trim();
+        editing = null;
+        save();
+        render();
+      },
+      onkeydown: function (e) { if (e.key === "Escape") stopEditing(); }
+    }, [
+      el("div", { class: "fields" }, [title, due, why]),
+      el("div", { class: "form-actions" }, [
+        el("button", { type: "submit", class: "btn small", text: "Save" }),
+        el("button", { type: "button", class: "btn ghost small", text: "Cancel", onclick: stopEditing })
+      ])
+    ]);
+  }
+
+  function stepItem(g, s, i, isNext) {
+    if (editing && editing.stepId === s.id) return stepEditForm(g, s);
+
+    var boxId = "box-" + s.id;
+    var last = g.steps.length - 1;
+
+    function move(dir) {
+      var j = i + dir;
+      g.steps.splice(i, 1);
+      g.steps.splice(j, 0, s);
+      save();
+      focusAfter = "#" + boxId;
+      render();
+    }
+
+    return el("li", { class: "step" + (s.done ? " done" : "") + (isNext ? " next" : "") }, [
+      el("input", { type: "checkbox", id: boxId, checked: !!s.done,
+        onchange: function () {
+          var wasComplete = g.steps.every(function (x) { return x.done; });
+          s.done = this.checked;
+          if (!wasComplete && g.steps.every(function (x) { return x.done; })) justFinished = g.id;
+          save();
+          focusAfter = "#" + boxId;
+          render();
+        } }),
+      el("label", { class: "step-text", for: boxId, text: s.text }),
+      s.due && el("span", { class: "step-due", text: fmt(s.due) }),
+      isNext && el("span", { class: "tag", text: "Up next" }),
+      el("div", { class: "step-actions" }, [
+        el("button", { type: "button", class: "icon-btn", text: "↑", title: "Move up", "aria-label": "Move up: " + s.text,
+          disabled: i === 0, onclick: function () { move(-1); } }),
+        el("button", { type: "button", class: "icon-btn", text: "↓", title: "Move down", "aria-label": "Move down: " + s.text,
+          disabled: i === last, onclick: function () { move(1); } }),
+        el("button", { type: "button", class: "icon-btn", text: "✎", title: "Edit", "aria-label": "Edit step: " + s.text,
+          onclick: function () {
+            editing = { goalId: g.id, stepId: s.id };
+            focusAfter = '[data-edit-step="' + s.id + '"]';
+            render();
+          } }),
+        el("button", { type: "button", class: "icon-btn danger", text: "✕", title: "Delete", "aria-label": "Delete step: " + s.text,
+          onclick: function () {
+            g.steps.splice(i, 1);
+            save();
+            render();
+          } })
+      ])
+    ]);
+  }
+
+  function stepEditForm(g, s) {
+    var text = el("input", { type: "text", value: s.text, maxlength: "120", required: true, "aria-label": "Step", "data-edit-step": s.id });
+    var due = el("input", { type: "date", value: s.due || "", "aria-label": "Step date (optional)" });
+    return el("li", { class: "step" }, [
+      el("form", {
+        class: "step-edit",
+        onsubmit: function (e) {
+          e.preventDefault();
+          var v = text.value.trim();
+          if (!v) return;
+          s.text = v;
+          s.due = due.value;
+          editing = null;
+          save();
+          focusAfter = "#box-" + s.id;
+          render();
+        },
+        onkeydown: function (e) { if (e.key === "Escape") stopEditing(); }
+      }, [
+        text, due,
+        el("button", { type: "submit", class: "btn small", text: "Save" }),
+        el("button", { type: "button", class: "btn ghost small", text: "Cancel", onclick: stopEditing })
+      ])
+    ]);
+  }
+
+  function addStepForm(g) {
+    var text = el("input", { type: "text", placeholder: "Add a small step…", maxlength: "120", required: true,
+                             "aria-label": "New step for " + g.title, "data-add-step": g.id });
+    var due = el("input", { type: "date", "aria-label": "Step date (optional)", title: "Step date (optional)" });
+    return el("form", {
+      class: "add-step",
+      onsubmit: function (e) {
+        e.preventDefault();
+        var v = text.value.trim();
+        if (!v) return;
+        g.steps.push({ id: uid(), text: v, due: due.value, done: false });
+        save();
+        focusAfter = '[data-add-step="' + g.id + '"]';
+        render();
+      }
+    }, [text, due, el("button", { type: "submit", class: "btn small", text: "Add step" })]);
+  }
+
+  // ---------- Page-level actions ----------
+
+  document.getElementById("new-goal").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var title = document.getElementById("goal-title");
+    var due = document.getElementById("goal-due");
+    var why = document.getElementById("goal-why");
+    var v = title.value.trim();
+    if (!v) return;
+    var g = { id: uid(), title: v, due: due.value, why: why.value.trim(), steps: [] };
+    goals.push(g);
+    this.reset();
+    save();
+    focusAfter = '[data-add-step="' + g.id + '"]';
+    render();
+  });
+
+  document.getElementById("example").addEventListener("click", function () {
+    var g = {
+      id: uid(),
+      title: "Run a marathon",
+      due: "",
+      why: "Prove to myself I can finish something big.",
+      steps: [
+        { id: uid(), text: "Run 1 mile without stopping", due: "", done: true },
+        { id: uid(), text: "Finish a 5K", due: "", done: true },
+        { id: uid(), text: "Finish a 10K", due: "", done: false },
+        { id: uid(), text: "Run a half marathon", due: "", done: false }
+      ]
+    };
+    goals.push(g);
+    save();
+    focusAfter = '[data-add-step="' + g.id + '"]';
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
