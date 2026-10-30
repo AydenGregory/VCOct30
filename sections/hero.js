@@ -139,7 +139,7 @@ section("hero", () => `
       <h1>${SITE.name}<span>.</span></h1>
       <p class="hero-tagline">${SITE.tagline}</p>
       <div class="hero-actions">
-        <a class="hero-btn" href="#signup">Start your first goal</a>
+        <a class="hero-btn" href="goals.html">Start your first goal</a>
         <a class="hero-link" href="#features">See how it works →</a>
       </div>
     </div>
